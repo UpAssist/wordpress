@@ -1,7 +1,5 @@
 <?php
-
-
-namespace UpAssist\Wordpress;
+namespace UpAssist\WordPress;
 
 
 class Theme

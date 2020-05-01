@@ -8,5 +8,10 @@
             "email": "henjo@upassist.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "UpAssist\\WordPress\\": "src/"
+        }
+    }
 }

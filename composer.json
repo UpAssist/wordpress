@@ -1,0 +1,12 @@
+{
+    "name": "upassist/wordpress",
+    "description": "Setup of helpers to kickstart a new theme",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Henjo Hoeksma",
+            "email": "henjo@upassist.com"
+        }
+    ],
+    "require": {}
+}

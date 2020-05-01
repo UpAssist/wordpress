@@ -11,7 +11,7 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "UpAssist\\WordPress\\": "src/"
+            "UpAssist\\WordPress\\": "src/classes"
         }
     }
 }

@@ -24,6 +24,12 @@ class Theme extends Singleton
      */
     protected $scripts;
 
+    /** @var array|null $support */
+    protected $support;
+
+    /** @var array $dependancies */
+    protected $dependancies;
+
     /**
      * Theme constructor.
      * @param string $themeName
@@ -31,76 +37,35 @@ class Theme extends Singleton
      * @param array|null $support
      * @param array $styles
      */
-    public function __construct($themeName = 'upassist', $locale = 'nl_NL', array $support = null, array $styles = null, array $scripts = null)
+    public function __construct($themeName = 'upassist', $locale = 'nl_NL', array $support = [])
     {
+        parent::__construct();
+
         setlocale(LC_ALL, $locale);
         $this->locale = $locale;
+        $this->support = $support;
+        $this->themeName = $themeName;
 
-        $this->loadTextDomain();
-        $this->addThemeSupport($support);
-
-        if ($styles) {
-            $this->styles = $styles;
-            add_action('wp_enqueue_scripts', [
-                $this,
-                'enqueueStyles'
-            ]);
-        }
-
-        if ($scripts) {
-            $this->scripts = $scripts;
-            add_action('wp_enqueue_scripts', [
-                $this,
-                'enqueueScripts'
-            ]);
-        }
-
-        parent::__construct();
+        add_action('after_setup_theme', [
+            $this,
+            'setup'
+        ]);
     }
 
-    /**
-     * @param array|null $support
-     */
-    protected function addThemeSupport(array $support = null)
+    public function renderThemeSupport()
     {
-        if ($support === null) {
-            $support = [
-                'title-tag',
-                'html5' => [
-                    'search-form',
-                    'comment-form',
-                    'comment-list',
-                    'gallery',
-                    'caption',
-                ],
-                'post-thumbnails',
-                'post-formats' => [
-                    'aside',
-                    'gallery',
-                    'quote',
-                    'image',
-                    'video'
-                ]
-            ];
+        if (empty($this->getSupport())) {
+            return;
         }
-
-        foreach ($support as $key => $value) {
-            switch ($key) {
-                case 'html5':
-                case 'post-formats':
-                    add_theme_support($key, $value);
-                    break;
-                default:
-                    add_theme_support($key);
-                    break;
-            }
+        foreach ($this->getSupport() as $key => $value) {
+            add_theme_support($key, $value);
         }
     }
 
     /**
      * Add support for translations
      */
-    protected function loadTextDomain()
+    public function loadTextDomain()
     {
         load_theme_textdomain($this->themeName, get_template_directory() . '/languages');
     }
@@ -155,5 +120,69 @@ class Theme extends Singleton
     {
         return $this->themeName;
     }
-}
 
+    /** @return array */
+    public function getSupport()
+    {
+        return $this->support;
+    }
+
+    public function registerDependency($functionName, $pluginName)
+    {
+        if (!function_exists($functionName)) {
+            $this->dependancies[] = '<div class="error"><p>' . __('Warning: The theme needs Plugin `' . $pluginName . '` to function', $this->getName()) . '</p></div>';
+        }
+
+        add_action('admin_notices', [
+            $this,
+            'renderDependancies'
+        ]);
+    }
+
+    public function registerStylesheets(array $styles = null)
+    {
+        if ($styles) {
+            $this->styles = $styles;
+            add_action('wp_enqueue_scripts', [
+                $this,
+                'enqueueStyles'
+            ]);
+        }
+    }
+
+    public function registerScripts(array $scripts = null)
+    {
+        if ($scripts) {
+            $this->scripts = $scripts;
+            add_action('wp_enqueue_scripts', [
+                $this,
+                'enqueueScripts'
+            ]);
+        }
+    }
+
+    public function registerCustomPostType($name, $singular_name, $description, $args)
+    {
+        new CustomPostType(
+            $name,
+            $singular_name,
+            $description,
+            $args
+        );
+    }
+
+    public function renderDependancies()
+    {
+        if ($this->dependancies) {
+            foreach ($this->dependancies as $dependancy) {
+                echo $dependancy;
+            }
+        }
+    }
+
+    public function setup()
+    {
+        $this->loadTextDomain();
+        $this->renderThemeSupport();
+    }
+}

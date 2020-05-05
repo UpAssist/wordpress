@@ -41,7 +41,7 @@ class Theme extends Singleton
     {
         parent::__construct();
 
-        setlocale(LC_ALL, $locale);
+        setlocale(LC_TIME, $locale);
         $this->locale = $locale;
         $this->support = $support;
         $this->themeName = $themeName;
@@ -161,13 +161,14 @@ class Theme extends Singleton
         }
     }
 
-    public function registerCustomPostType($name, $singular_name, $description, $args)
+    public function registerCustomPostType($name, $singular_name, $description, $args, $queryArgs)
     {
         new CustomPostType(
             $name,
             $singular_name,
             $description,
-            $args
+            $args,
+            $queryArgs
         );
     }
 
@@ -180,6 +181,9 @@ class Theme extends Singleton
         }
     }
 
+    public function utilities() {
+        return Utilities::getInstance();
+    }
     public function setup()
     {
         $this->loadTextDomain();

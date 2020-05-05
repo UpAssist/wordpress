@@ -181,9 +181,11 @@ class Theme extends Singleton
         }
     }
 
-    public function utilities() {
+    public function utilities()
+    {
         return Utilities::getInstance();
     }
+
     public function setup()
     {
         $this->loadTextDomain();

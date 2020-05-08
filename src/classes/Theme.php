@@ -190,5 +190,9 @@ class Theme extends Singleton
     {
         $this->loadTextDomain();
         $this->renderThemeSupport();
+
+        // Disable auto plugin and theme updates
+        add_filter( 'auto_update_plugin', '__return_false' );
+        add_filter( 'auto_update_theme', '__return_false' );
     }
 }

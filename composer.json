@@ -9,6 +9,9 @@
         }
     ],
     "require": {},
+    "suggest": {
+        "wpackagist-plugin/stops-core-theme-and-plugin-updates": "Prevent updates"
+    },
     "autoload": {
         "psr-4": {
             "UpAssist\\WordPress\\": "src/classes"
